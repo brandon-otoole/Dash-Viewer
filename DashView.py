@@ -65,9 +65,9 @@ class Screen(Frame):
         self.clearScreen()
         
         if self.lTurn:
-            self.drawLeftArrow()
+            self.drawLeftArrow(150, 250, 100, 200)
         if self.rTurn:
-            self.drawRightArrow()
+            self.drawRightArrow(550, 250, 100, 200)
         if self.totalDistance:
             self.drawTotalDistance()
         if self.nextDistance:
@@ -98,13 +98,11 @@ class Screen(Frame):
         self.nextDistance = not self.nextDistance
         self.updateScreen()
     
-    def drawLeftArrow(self):
-        color="white"
-        self.w.create_rectangle(50, 300, 100, 400, fill=color, outline=color)
+    def drawLeftArrow(self, x, y, w, h, color="white"):
+        self.w.create_polygon(x+w, y-h/2, x, y, x+w, y+h/2, x+w/5, y, fill=color, outline=color)
     
-    def drawRightArrow(self):
-        color="white"
-        self.w.create_rectangle(600, 300, 650, 400, fill=color, outline=color)
+    def drawRightArrow(self, x, y, w, h, color="white"):
+        self.w.create_polygon(x-w, y-h/2, x, y, x-w, y+h/2, x-w/5, y, fill=color, outline=color)
     
     def drawTotalDistance(self):
         color="white"

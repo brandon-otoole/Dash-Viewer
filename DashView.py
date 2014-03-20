@@ -6,8 +6,8 @@ class Screen(Frame):
     def __init__(self, master):
         Frame.__init__(self, master)
         
-        self.totalDistance = True
-        self.nextDistance = True
+        self.totalDistance = 0
+        self.nextDistance = 0.0
         self.lTurn = False
         self.rTurn = False
         
@@ -17,25 +17,24 @@ class Screen(Frame):
         self.wMod = 20
         self.xOff = 4*self.wMod
         self.yOff = self.xOff
-        self.canvSize = 700
+        self.canvasWidth = 700
+        self.canvasHeight = 500
         
-        self.w = Canvas(master, width=self.canvSize, height=self.canvSize)
+        self.w = Canvas(master, width=self.canvasWidth, height=self.canvasHeight)
         self.w.grid(row=0, column=0, columnspan=4)
 
         self.lArrowToggle = Button(master, text="LEFT",command=self.toggleLeft)
         self.lArrowToggle.grid(row=1, column=0)
-        self.b1 = Button(master, text="Total Distance",command=self.toggleTotal)
-        self.b1.grid(row=1, column=1)
-        self.b2 = Button(master, text="Next Distance",command=self.toggleNext)
-        self.b2.grid(row=1, column=2)
+        self.sbTotalDistance = Spinbox(master, from_ = 0, to = 100, increment=5, command=self.toggleTotal)
+        self.sbTotalDistance.grid(row=1, column=1)
+        self.sbNextDistance = Spinbox(master, from_ = 0.0, to = 5.0, increment=0.1, command=self.toggleNext)
+        self.sbNextDistance.grid(row=1, column=2)
         self.rArrowToggle = Button(master, text="RIGHT",command=self.toggleRight)
         self.rArrowToggle.grid(row=1, column=3)
         
         self.updateScreen()
     
     def updateScreen(self):
-        self.ver = (self.ver + 1)%7
-        
         self.clearScreen()
         
         if self.lTurn:
@@ -43,33 +42,26 @@ class Screen(Frame):
         if self.rTurn:
             self.drawRightArrow(550, 250, 100, 200)
         if self.totalDistance:
-            self.drawTotalDistance()
+            self.drawTotalDistance(25, 25)
         if self.nextDistance:
-            self.drawNextDistance()
-        
-        #self.drawAlignment(self.xOff, self.yOff, self.wMod)
-        #self.drawAlignment(self.xOff + 14*self.wMod, self.yOff, self.wMod)
-        #self.drawAlignment(self.xOff, self.yOff+14*self.wMod, self.wMod)
-        #self.drawTiming(self.xOff, self.yOff, self.wMod)
-        #self.drawVersion(self.xOff, self.yOff, self.wMod)
-        #self.drawFormat(self.ver, self.xOff, self.yOff, self.wMod)
+            self.drawNextDistance(350, 250)
     
     def toggleLeft(self):
-        self.lTurn = True
-        self.rTurn = not self.lTurn
+        self.lTurn = not self.lTurn
+        self.rTurn = False
         self.updateScreen()
     
     def toggleRight(self):
-        self.rTurn = True
-        self.lTurn = not self.rTurn
+        self.rTurn = not self.rTurn
+        self.lTurn = False
         self.updateScreen()
         
     def toggleTotal(self):
-        self.totalDistance = not self.totalDistance
+        self.totalDistance = self.sbTotalDistance.get()
         self.updateScreen()
     
     def toggleNext(self):
-        self.nextDistance = not self.nextDistance
+        self.nextDistance = self.sbNextDistance.get()
         self.updateScreen()
     
     def drawLeftArrow(self, x, y, w, h, color="white"):
@@ -78,17 +70,18 @@ class Screen(Frame):
     def drawRightArrow(self, x, y, w, h, color="white"):
         self.w.create_polygon(x-w, y-h/2, x, y, x-w, y+h/2, x-w/5, y, fill=color, outline=color)
     
-    def drawTotalDistance(self):
-        color="white"
-        self.w.create_rectangle(25, 25, 25+150, 25+50, fill=color, outline=color)
-    
-    def drawNextDistance(self):
-        color="white"
-        self.w.create_rectangle(325, 325, 375, 375, fill=color, outline=color)
+    def drawTotalDistance(self, x, y, color="white"):
+        canvas_id = self.w.create_text(x, y, anchor="nw", fill=color, font="Helvetica 18")
+        self.w.itemconfig(canvas_id, text="TOTAL DISTANCE:  miles")
+        self.w.insert(canvas_id, 16, self.totalDistance)
+        
+    def drawNextDistance(self, x, y, color="white"):
+        canvas_id = self.w.create_text(x, y, fill=color, font="Helvetica 36")
+        self.w.itemconfig(canvas_id, text=self.nextDistance )
     
     def clearScreen(self):
         color = "black"
-        self.w.create_rectangle(0, 0, 700, 700, fill=color, outline=color)
+        self.w.create_rectangle(0, 0, self.canvasWidth, self.canvasHeight, fill=color, outline=color)
 
 screen = Screen( Tk() )
 mainloop()
